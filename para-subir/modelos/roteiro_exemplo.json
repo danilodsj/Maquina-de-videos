@@ -1,0 +1,39 @@
+{
+  "titulo": "3 IAs que fazem seu conteúdo sozinhas",
+  "descricao": "Três ferramentas de IA que cortam horas da sua produção de conteúdo, e o cuidado que quase ninguém tem ao usar.",
+  "hashtags": ["IA", "marketingdigital", "produçãodeconteúdo"],
+  "referencia": "https://www.youtube.com/shorts/EXEMPLO",
+  "fontes_checadas": ["https://exemplo.com/fonte-oficial"],
+  "cenas": [
+    {
+      "tipo": "gancho",
+      "fala": "[animado] Você ainda gasta quatro horas pra fazer um único vídeo?",
+      "dados": {"texto": "Ainda gasta *4 horas* por vídeo?", "selo": "pare agora"}
+    },
+    {
+      "tipo": "numero",
+      "fala": "Criadores que usam IA publicam até cinco vezes mais conteúdo por semana.",
+      "dados": {"valor": 5, "sufixo": "x", "rotulo": "mais conteúdo por semana com *IA*"}
+    },
+    {
+      "tipo": "lista",
+      "fala": "O combo é simples: o Claude escreve o roteiro, a ElevenLabs narra, e o CapCut monta os cortes.",
+      "dados": {"titulo": "O combo que *economiza horas*", "itens": ["Claude: roteiro", "ElevenLabs: narração", "CapCut: cortes"], "numerada": true}
+    },
+    {
+      "tipo": "comparacao",
+      "fala": "Antes eram quatro horas por vídeo. Agora são vinte minutos, e cinco posts por dia.",
+      "dados": {"antes": {"titulo": "Sem IA", "itens": ["4h por vídeo", "1 post por dia"]}, "depois": {"titulo": "Com IA", "itens": ["20 min por vídeo", "5 posts por dia"]}}
+    },
+    {
+      "tipo": "alerta",
+      "fala": "[sério] Mas cuidado: revise sempre os fatos. A IA erra com muita confiança.",
+      "dados": {"titulo": "Cuidado", "texto": "Revise os fatos: a IA erra *com confiança*"}
+    },
+    {
+      "tipo": "cta",
+      "fala": "Quer mais atalhos de IA pro seu marketing? Me segue aqui.",
+      "dados": {"texto": "Quer mais *atalhos de IA*?", "botao": "Siga para mais"}
+    }
+  ]
+}

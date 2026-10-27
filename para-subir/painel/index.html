@@ -1,0 +1,265 @@
+<style>
+  .rs { display: grid; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
+  .rs-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .rs-head p { margin: var(--cds-gap-xs) 0 0; color: var(--color-fg-muted); max-width: 70ch; }
+  .rs-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: var(--cds-gap-md); }
+  .rs-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: grid; gap: var(--cds-gap-xs); }
+  .rs-tile span { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .rs-tile b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .rs-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); min-width: 0; }
+  .rs-card h2 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .rs-note { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .rs-funil { display: grid; gap: var(--cds-gap-xs); min-height: 9rem; }
+  .rs-etapa { display: grid; grid-template-columns: 7.5rem 1fr 3rem; align-items: center; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
+  .rs-etapa i { display: block; height: 14px; border-radius: 7px; background: var(--cds-chart-muted); min-width: 2px; }
+  .rs-etapa.on i { background: var(--rs-cor); }
+  .rs-etapa em { font-style: normal; text-align: right; font-variant-numeric: tabular-nums; }
+  .rs-tools { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+  .rs-chip { font: inherit; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-radius: 999px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); cursor: pointer; }
+  .rs-chip[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+  .rs-chip:focus-visible, .rs-busca:focus-visible, .rs-tabela th button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .rs-busca { font: inherit; padding: var(--cds-pad-xs) var(--cds-pad-sm); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); flex: 1 1 14rem; min-width: 0; }
+  .rs-scroll { max-height: 34rem; overflow: auto; }
+  .rs-tabela { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .rs-tabela th { position: sticky; top: 0; background: var(--color-panel); text-align: left; border-bottom: 1px solid var(--color-border-line); padding: 0; white-space: nowrap; z-index: 1; }
+  .rs-tabela th button { font: inherit; font-weight: var(--cds-font-weight-medium); background: none; border: 0; color: var(--color-fg); padding: var(--cds-pad-xs) var(--cds-pad-sm); cursor: pointer; width: 100%; text-align: inherit; }
+  .rs-tabela td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .rs-tabela .num { text-align: right; }
+  .rs-tabela td.tit { min-width: 16rem; }
+  .rs-tabela td.tit a { color: var(--color-fg); }
+  .rs-tabela td.tit small { display: block; color: var(--color-fg-muted); margin-top: 2px; }
+  .rs-barra { display: grid; grid-template-columns: 1fr 3.5rem; gap: var(--cds-gap-xs); align-items: center; min-width: 7rem; }
+  .rs-barra i { display: block; height: 6px; border-radius: 3px; background: var(--rs-cor, var(--cds-chart-muted)); }
+  .rs-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: var(--cds-font-size-caption); border: 1px solid var(--color-border-line); white-space: nowrap; }
+  .rs-pill.ok { color: var(--color-ok); border-color: currentColor; }
+  .rs-pill.warn { color: var(--color-warn); border-color: currentColor; }
+  .rs-pill.bad { color: var(--color-fg-muted); }
+  .rs-falha { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-xs); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); min-height: 6rem; }
+  .rs-falha::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  @media (max-width: 640px) { .rs-col-opc { display: none; } }
+</style>
+
+<div class="rs">
+  <header class="rs-head" id="topo">
+    <h1>Radar de Shorts</h1>
+    <p class="rs-resumo dash-skeleton" data-source="resumo videos">—</p>
+  </header>
+
+  <section class="rs-tiles" id="numeros" aria-label="Vídeos por etapa">
+    <div class="rs-tile"><span>Garimpados</span><b class="dash-skeleton" data-source="resumo" data-field="qtd" data-where="etapa=total">—</b></div>
+    <div class="rs-tile"><span>Na fila (candidatos)</span><b class="dash-skeleton" data-source="resumo" data-field="qtd" data-where="etapa=candidato">—</b></div>
+    <div class="rs-tile"><span>Em roteiro ou aprovados</span><b class="dash-skeleton" data-source="resumo" data-field="qtd" data-where="etapa=em_producao">—</b></div>
+    <div class="rs-tile"><span>Produzidos</span><b class="dash-skeleton" data-source="resumo" data-field="qtd" data-where="etapa=produzido">—</b></div>
+    <div class="rs-tile"><span>Publicados</span><b class="dash-skeleton" data-source="resumo" data-field="qtd" data-where="etapa=publicado">—</b></div>
+  </section>
+
+  <section class="rs-card" id="funil">
+    <h2>Onde cada vídeo está</h2>
+    <p class="rs-note">Quantos vídeos de referência estão em cada etapa do fluxo, do garimpo à publicação.</p>
+    <div class="rs-funil dash-skeleton" data-source="etapas"></div>
+  </section>
+
+  <section class="rs-card" id="lista">
+    <h2>Vídeos garimpados</h2>
+    <p class="rs-note">Clique numa etapa para filtrar e num cabeçalho para ordenar. Views/dia = views desde a publicação ÷ dias no ar. Nota de 0 a 100 (velocidade, outlier e engajamento).</p>
+    <div class="rs-tools">
+      <div class="rs-filtros" role="group" aria-label="Filtrar por etapa"></div>
+      <input class="rs-busca" id="rs-busca" type="search" placeholder="Buscar título, canal ou palavra-chave" aria-label="Buscar">
+    </div>
+    <div class="rs-scroll">
+      <table class="rs-tabela" data-source="videos" data-row-key="n">
+        <thead><tr>
+          <th data-field="n" class="num"><button data-k="n">Nº</button></th>
+          <th data-field="titulo"><button data-k="titulo">Título</button></th>
+          <th data-field="canal" class="rs-col-opc"><button data-k="canal">Canal</button></th>
+          <th data-field="views" class="num"><button data-k="views">Views</button></th>
+          <th data-field="views_por_dia"><button data-k="views_por_dia">Views/dia</button></th>
+          <th data-field="nota" class="num"><button data-k="nota">Nota</button></th>
+          <th data-field="idade_dias" class="num rs-col-opc"><button data-k="idade_dias">Dias</button></th>
+          <th data-field="status"><button data-k="status">Etapa</button></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="rs-note rs-contagem"></p>
+  </section>
+</div>
+
+<script>
+  const ETAPAS = [
+    ['candidato', 'Candidato'], ['transcrito', 'Transcrito'], ['triado', 'Triado'], ['aprovado', 'Aprovado'],
+    ['roteirizado', 'Roteirizado'], ['produzido', 'Produzido'], ['publicado', 'Publicado'],
+    ['sem_legenda', 'Sem legenda'], ['erro', 'Erro'], ['descartado', 'Descartado'],
+  ];
+  window.RS_ETAPAS = ETAPAS;
+
+  dash.calc('resumo', {
+    title: 'Contagem por etapa',
+    description: 'Total de vídeos garimpados e quantos estão em cada etapa principal.',
+    inputs: ['videos'],
+    fn: (videos) => {
+      const n = (s) => videos.filter((v) => s.includes(v.status)).length;
+      return [
+        { etapa: 'total', qtd: videos.length },
+        { etapa: 'candidato', qtd: n(['candidato']) },
+        { etapa: 'em_producao', qtd: n(['transcrito', 'triado', 'aprovado', 'roteirizado']) },
+        { etapa: 'produzido', qtd: n(['produzido']) },
+        { etapa: 'publicado', qtd: n(['publicado']) },
+        { etapa: 'descartado', qtd: n(['descartado', 'sem_legenda', 'erro']) },
+      ];
+    },
+  });
+
+  dash.calc('etapas', {
+    title: 'Vídeos por etapa',
+    description: 'Quantos vídeos há em cada etapa do fluxo.',
+    inputs: ['videos'],
+    fn: (videos) => {
+      const ordem = ['candidato', 'transcrito', 'triado', 'aprovado', 'roteirizado', 'produzido', 'publicado', 'sem_legenda', 'erro', 'descartado'];
+      return ordem.map((etapa) => ({ etapa, qtd: videos.filter((v) => v.status === etapa).length }));
+    },
+  });
+</script>
+
+<script>
+  const fmt = d3.format(',');
+  const compacto = new Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 });
+  const nome = Object.fromEntries(window.RS_ETAPAS);
+  const pill = (s) => (s === 'publicado' || s === 'produzido') ? 'ok' : (['aprovado', 'roteirizado', 'triado', 'transcrito'].includes(s) ? 'warn' : (['descartado', 'erro', 'sem_legenda'].includes(s) ? 'bad' : ''));
+
+  const estado = { filtro: 'ativos', busca: '', chave: 'nota', desc: true };
+  const ativos = (s) => !['descartado', 'erro', 'sem_legenda'].includes(s);
+
+  const filtros = document.querySelector('.rs-filtros');
+  const busca = document.getElementById('rs-busca');
+  busca.addEventListener('input', () => { estado.busca = busca.value.trim().toLowerCase(); desenharTabela(); });
+  document.querySelectorAll('.rs-tabela th button').forEach((b) => b.addEventListener('click', () => {
+    const k = b.dataset.k;
+    estado.desc = estado.chave === k ? !estado.desc : !['titulo', 'canal', 'status', 'n'].includes(k);
+    estado.chave = k;
+    desenharTabela();
+  }));
+
+  function desenharFiltros(rows) {
+    const contagem = d3.rollup(rows, (v) => v.length, (r) => r.status);
+    const opcoes = [['ativos', 'Ativos', rows.filter((r) => ativos(r.status)).length], ['todos', 'Todos', rows.length],
+      ...window.RS_ETAPAS.filter(([k]) => contagem.get(k)).map(([k, rot]) => [k, rot, contagem.get(k)])];
+    filtros.replaceChildren(...opcoes.map(([k, rot, q]) => {
+      const b = document.createElement('button');
+      b.className = 'rs-chip';
+      b.type = 'button';
+      b.textContent = `${rot} · ${q}`;
+      b.setAttribute('aria-pressed', String(estado.filtro === k));
+      b.addEventListener('click', () => { estado.filtro = k; desenharTabela(); desenharFiltros(rows); });
+      return b;
+    }));
+  }
+
+  function desenharTabela() {
+    const d = dash.data('videos');
+    const corpo = document.querySelector('.rs-tabela tbody');
+    const contagem = document.querySelector('.rs-contagem');
+    if (d.status !== 'ok') {
+      corpo.replaceChildren();
+      contagem.textContent = '';
+      return;
+    }
+    let rows = d.data.map((r) => ({ ...r, views: Number(r.views), views_por_dia: r.views_por_dia == null ? null : Number(r.views_por_dia), nota: Number(r.nota), idade_dias: r.idade_dias == null ? null : Number(r.idade_dias), n: Number(r.n) }));
+    if (estado.filtro === 'ativos') rows = rows.filter((r) => ativos(r.status));
+    else if (estado.filtro !== 'todos') rows = rows.filter((r) => r.status === estado.filtro);
+    if (estado.busca) rows = rows.filter((r) => [r.titulo, r.canal, r.palavra_chave].join(' ').toLowerCase().includes(estado.busca));
+    const k = estado.chave;
+    rows.sort((a, b) => {
+      const x = a[k], y = b[k];
+      const c = (typeof x === 'number' || typeof y === 'number') ? (x ?? -Infinity) - (y ?? -Infinity) : String(x ?? '').localeCompare(String(y ?? ''), 'pt-BR');
+      return estado.desc ? -c : c;
+    });
+    document.querySelectorAll('.rs-tabela th').forEach((th) => {
+      const b = th.querySelector('button');
+      th.setAttribute('aria-sort', b.dataset.k === k ? (estado.desc ? 'descending' : 'ascending') : 'none');
+    });
+    const maxVpd = d3.max(d.data, (r) => Number(r.views_por_dia) || 0) || 1;
+    corpo.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr');
+      const td = (cls) => { const c = document.createElement('td'); if (cls) c.className = cls; tr.append(c); return c; };
+      td('num').textContent = String(r.n);
+      const t = td('tit');
+      const a = document.createElement('a');
+      a.href = r.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = r.titulo || '(sem título)';
+      t.append(a);
+      if (r.fala_central) { const s = document.createElement('small'); s.textContent = r.fala_central; t.append(s); }
+      td('rs-col-opc').textContent = r.canal || '';
+      td('num').textContent = r.views == null ? '' : compacto.format(r.views);
+      const bar = td();
+      if (r.views_por_dia != null) {
+        const w = document.createElement('div'); w.className = 'rs-barra';
+        const i = document.createElement('i');
+        i.style.width = `${Math.max(2, 100 * r.views_por_dia / maxVpd)}%`;
+        i.style.setProperty('--rs-cor', dash.colors[0]);
+        const v = document.createElement('span'); v.className = 'num'; v.textContent = compacto.format(r.views_por_dia);
+        w.append(i, v); bar.append(w);
+      }
+      td('num').textContent = r.nota == null || Number.isNaN(r.nota) ? '' : r.nota.toFixed(1).replace('.', ',');
+      td('num rs-col-opc').textContent = r.idade_dias == null ? '' : String(r.idade_dias).replace('.', ',');
+      const p = document.createElement('span');
+      p.className = `rs-pill ${pill(r.status)}`;
+      p.textContent = nome[r.status] || r.status;
+      td().append(p);
+      return tr;
+    }));
+    contagem.textContent = `${fmt(rows.length)} de ${fmt(d.data.length)} vídeos`;
+  }
+
+  function desenharFunil() {
+    const box = document.querySelector('.rs-funil');
+    const e = dash.data('etapas');
+    if (e.status !== 'ok') {
+      box.replaceChildren();
+      if (e.status === 'error') { const f = document.createElement('div'); f.className = 'rs-falha'; f.textContent = 'Failed to load'; box.append(f); box.classList.remove('dash-skeleton'); }
+      return;
+    }
+    box.classList.remove('dash-skeleton');
+    const max = d3.max(e.data, (r) => r.qtd) || 1;
+    box.replaceChildren(...e.data.filter((r) => r.qtd > 0 || ['candidato', 'produzido', 'publicado'].includes(r.etapa)).map((r, i) => {
+      const linha = document.createElement('div');
+      linha.className = 'rs-etapa' + (['descartado', 'sem_legenda', 'erro'].includes(r.etapa) ? '' : ' on');
+      linha.style.setProperty('--rs-cor', dash.colors[0]);
+      const rot = document.createElement('span'); rot.textContent = nome[r.etapa];
+      const trilho = document.createElement('div');
+      const barra = document.createElement('i'); barra.style.width = `${100 * r.qtd / max}%`;
+      trilho.append(barra);
+      const q = document.createElement('em'); q.textContent = fmt(r.qtd);
+      linha.append(rot, trilho, q);
+      return linha;
+    }));
+  }
+
+  dash.onData(() => {
+    const r = dash.data('resumo');
+    document.querySelectorAll('[data-source="resumo"][data-where]').forEach((el) => {
+      const etapa = el.dataset.where.split('=')[1];
+      if (r.status === 'ok') {
+        const row = r.data.find((x) => x.etapa === etapa);
+        el.textContent = row ? fmt(row.qtd) : '—';
+        el.classList.remove('dash-skeleton');
+      } else {
+        el.textContent = '—';
+      }
+    });
+    const res = document.querySelector('.rs-resumo');
+    const v = dash.data('videos');
+    if (r.status === 'ok' && v.status === 'ok') {
+      const q = Object.fromEntries(r.data.map((x) => [x.etapa, x.qtd]));
+      const topo = v.data.filter((x) => x.status === 'candidato').sort((a, b) => Number(b.nota) - Number(a.nota))[0];
+      res.textContent = `${fmt(q.candidato)} vídeos esperam triagem` + (topo ? `; o de maior nota é "${topo.titulo}" (${Number(topo.nota).toFixed(1).replace('.', ',')}).` : '.');
+      res.classList.remove('dash-skeleton');
+      desenharFiltros(v.data);
+    } else {
+      res.textContent = '—';
+    }
+    desenharFunil();
+    desenharTabela();
+  });
+</script>

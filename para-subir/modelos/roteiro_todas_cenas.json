@@ -1,0 +1,23 @@
+{
+  "titulo": "Teste de estilo: todas as cenas",
+  "descricao": "Roteiro de teste que usa os 8 tipos de cena. Use com: python mv.py previa modelos/roteiro_todas_cenas.json",
+  "hashtags": ["teste"],
+  "cenas": [
+    {"tipo": "gancho", "fala": "Você ainda gasta quatro horas pra fazer um único vídeo?",
+     "dados": {"texto": "Ainda gasta *4 horas* por vídeo?", "selo": "pare agora"}},
+    {"tipo": "palavra", "fala": "O segredo tem nome: automação.",
+     "dados": {"palavra": "Automação", "texto": "o que separa quem escala de quem *cansa*"}},
+    {"tipo": "numero", "fala": "Criadores que usam IA publicam até cinco vezes mais por semana.",
+     "dados": {"valor": 5, "sufixo": "x", "rotulo": "mais conteúdo por semana com *IA*"}},
+    {"tipo": "lista", "fala": "O combo: o Claude escreve, a ElevenLabs narra e o CapCut monta.",
+     "dados": {"titulo": "O combo que *economiza horas*", "itens": ["Claude: roteiro", "ElevenLabs: narração", "CapCut: cortes"], "numerada": true}},
+    {"tipo": "comparacao", "fala": "Antes eram quatro horas por vídeo. Agora, vinte minutos.",
+     "dados": {"antes": {"titulo": "Sem IA", "itens": ["4h por vídeo", "1 post por dia"]}, "depois": {"titulo": "Com IA", "itens": ["20 min por vídeo", "5 posts por dia"]}}},
+    {"tipo": "citacao", "fala": "Como dizem por aí: quem não usar IA vai competir com quem usa.",
+     "dados": {"texto": "Quem não usar *IA* vai competir com quem usa", "autor": "ditado do mercado"}},
+    {"tipo": "alerta", "fala": "Mas cuidado: revise sempre os fatos. A IA erra com confiança.",
+     "dados": {"titulo": "Cuidado", "texto": "Revise os fatos: a IA erra *com confiança*"}},
+    {"tipo": "cta", "fala": "Quer mais atalhos de IA? Me segue aqui.",
+     "dados": {"texto": "Quer mais *atalhos de IA*?", "botao": "Siga para mais"}}
+  ]
+}

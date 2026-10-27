@@ -1,0 +1,23 @@
+# Segredos
+.env
+credenciais/
+
+# Saídas geradas (pesadas e recriáveis)
+saida/
+*.mp4
+*.mp3
+modelos/previa.png
+vozes/
+
+# Material de terceiros (vídeos e transcrições de outros criadores)
+referencias/
+
+# Dados do garimpo (mudam todo dia; o painel recebe por upload)
+pautas/
+painel/videos.json
+painel/_pagina.json
+
+# Sobras
+tools/
+__pycache__/
+*.pyc

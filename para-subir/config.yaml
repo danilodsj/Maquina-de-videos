@@ -1,0 +1,155 @@
+# Configuração da Máquina de Vídeos.
+# Tudo que muda o comportamento do fluxo fica aqui. Os scripts não têm valores fixos.
+
+nicho:
+  descricao: >-
+    Marketing digital, tráfego pago, tecnologia e IA aplicada a negócios,
+    produção de conteúdo e criação para redes sociais.
+  # Idiomas do garimpo (os vídeos produzidos são sempre em PT-BR).
+  idiomas: [pt, en]
+  palavras_chave:
+    pt:
+      - inteligência artificial marketing
+      - ferramenta de IA
+      - chatgpt dica
+      - claude ia
+      - automação marketing
+      - tráfego pago
+      - produção de conteúdo
+      - criar conteúdo com IA
+      - marketing digital dica
+      - instagram algoritmo
+    en:
+      - ai tools marketing
+      - ai marketing tips
+      - content creation ai
+      - claude ai
+      - chatgpt tips
+      - ai automation business
+  # Hashtags usadas no garimpo sem chave (yt-dlp). Sem o "#".
+  hashtags:
+    - inteligenciaartificial
+    - marketingdigital
+    - chatgpt
+    - ferramentasdeia
+    - produtividade
+    - criadordeconteudo
+    - trafegopago
+    - aitools
+    - aimarketing
+    - contentcreator
+  # Canais acompanhados sempre (@handle ou ID UC...). Mais barato e mais certeiro que a busca.
+  canais_referencia: []
+
+garimpo:
+  fonte: auto            # api (precisa de YOUTUBE_API_KEY) | ytdlp (grátis, mais lento) | auto
+  max_idade_dias: 14
+  max_duracao_s: 180
+  min_views: 20000
+  resultados_por_busca: 25      # modo api: por palavra-chave
+  resultados_por_hashtag: 60    # modo ytdlp: por hashtag
+  max_detalhes_ytdlp: 40        # modo ytdlp: vídeos abertos por rodada (mais que isso, o YouTube bloqueia)
+  pausa_ytdlp_s: 2
+  max_buscas_api: 30     # cada busca custa 100 unidades da cota diária (10.000)
+
+nota:
+  # Pesos somam 1. Cada componente vai de 0 a 1 em escala logarítmica até o alvo.
+  pesos: {velocidade: 0.40, outlier: 0.35, engajamento: 0.25}
+  alvo_views_por_dia: 50000
+  alvo_outlier: 10        # views ÷ inscritos do canal
+  alvo_engajamento: 0.06  # (curtidas + 2×comentários) ÷ views
+  nota_minima: 50
+  top_para_triagem: 15
+
+roteiro:
+  duracao_min_s: 25
+  duracao_max_s: 45
+  palavras_por_segundo: 2.6
+
+narracao:
+  # elevenlabs (voz mais expressiva, pago por caractere) | google (Cloud Text-to-Speech, 1 milhão de
+  # caracteres/mês grátis nas vozes Neural2/Wavenet). Dá para trocar por vídeo: produzir --provedor google
+  provedor: elevenlabs
+  elevenlabs:
+    voice_id: cjVigY5qzO86Huf0OWal   # Eric (voz padrão/premade; o plano gratuito não usa vozes da biblioteca pela API)
+    # Tentados em ordem; o primeiro aceito pela API é usado.
+    modelos: [eleven_v3, eleven_multilingual_v2]
+    estabilidade: 0.45
+    similaridade: 0.8
+    estilo: 0.35
+    velocidade: 1.05
+  google:
+    # Precisa ser Neural2, Wavenet ou Standard (as vozes Chirp não devolvem o tempo das palavras).
+    # Masculinas pt-BR: pt-BR-Neural2-B, pt-BR-Wavenet-B · Femininas: pt-BR-Neural2-A, pt-BR-Neural2-C
+    voz: pt-BR-Chirp3-HD-Algieba
+    velocidade: 1.12     # 0.25 a 4.0
+    tom: 0               # -20 a 20 semitons
+    # Modelo Gemini TTS (opcional): usa a mesma voz pelo nome curto (Algieba, Charon...) e aceita
+    # uma instrução de estilo. Vazio = Chirp 3 HD comum. Ex.: gemini-2.5-flash-tts, gemini-2.5-pro-tts
+    modelo: ""
+    estilo_fala: "Fale em português do Brasil, num tom animado e natural de criador de conteúdo, com ritmo dinâmico."
+
+video:
+  largura: 1080
+  altura: 1920
+  fps: 30
+  crf: 18
+  preset: medium
+  cauda_s: 0.8           # tempo de tela depois da última palavra
+  # colagem (papel, recortes, meio-tom, stop-motion) | cidade_noturna (ilustração plana neon) | liso (gradiente)
+  estilo: colagem
+  fps_animacao: 12       # cadência do stop-motion no estilo colagem
+
+marca:
+  nome: ""               # aparece no topo do vídeo (ex.: "@seuperfil"); vazio = não mostra
+  cta_padrao: "Siga para mais dicas de IA e marketing"
+  # Identidade Odisys (github.com/danilodsj/idvisual-odisys) sobre a colagem retrô.
+  # Papéis: fundo = papel, card = cartão, texto = tinta, menta = destaque principal,
+  # violeta = 2º destaque, ambar = marca-texto, vermelho = negativo/alerta, magenta = 3º destaque.
+  # Paleta anterior (colagem laranja/verde-petróleo): menta #E2622A, violeta #22867A, magenta #C03B78.
+  cores:
+    fundo: "#E3DED4"
+    fundo2: "#D6CFC2"
+    card: "#F4F1EA"
+    texto: "#0C0C0F"     # tinta = fundo da marca Odisys
+    suave: "#7D7A86"
+    menta: "#7C5CF8"     # violeta Odisys
+    violeta: "#4A25D6"   # violeta profundo (início do gradiente)
+    ambar: "#E3AE35"     # marca-texto mostarda da colagem (mantido)
+    vermelho: "#A3263A"
+    magenta: "#A78BFF"   # violeta claro (fim do gradiente)
+  logo: true             # isotipo Odisys (gradiente) como selo no canto do vídeo
+  # Nomes de arquivo procurados em assets/fontes e nas fontes do Windows, em ordem.
+  fontes:
+    black: [InterDisplay-Black.ttf, Inter-Black.ttf, seguibl.ttf, ariblk.ttf]
+    bold: [InterDisplay-Bold.ttf, Inter-Bold.ttf, segoeuib.ttf, arialbd.ttf]
+    semibold: [InterDisplay-SemiBold.ttf, Inter-SemiBold.ttf, seguisb.ttf, arialbd.ttf]
+    regular: [InterDisplay-Regular.ttf, Inter-Regular.ttf, segoeui.ttf, arial.ttf]
+    titulo: [Manrope-Variable.ttf@ExtraBold, ROCKEB.TTF, ariblk.ttf]   # Manrope (marca Odisys)
+    bloco: [Manrope-Variable.ttf@ExtraBold, GILSANUB.TTF, ariblk.ttf]
+    maquina: [IBMPlexMono-SemiBold.ttf, courbd.ttf]                     # IBM Plex Mono (Odisys) no lugar da máquina de escrever
+    carimbo: [IBMPlexMono-Bold.ttf, STENCIL.TTF]                        # eyebrows em mono CAIXA ALTA
+    mao: [segoeprb.ttf, Inkfree.ttf, comicbd.ttf]        # escrita à mão (legendas de foto)
+    jornal: [BOD_B.TTF, georgiab.ttf, timesbd.ttf]       # manchete
+    masthead: [OLDENGL.TTF, BOD_B.TTF, timesbd.ttf]      # nome do jornal
+
+publicacao:
+  fuso: America/Sao_Paulo
+  horarios: ["08:00", "11:30", "14:00", "18:00", "21:00"]
+  max_por_dia: 5
+  antecedencia_min_h: 1
+  categoria_id: "28"     # Ciência e tecnologia
+  idioma: pt-BR
+  declarar_ia: true      # marca o vídeo como conteúdo sintético (voz de IA)
+  redes: [youtube, instagram, tiktok]   # padrão do publicar (--redes troca no comando)
+  instagram:
+    pagina: ""           # nome da Página do Facebook (ou @ do Instagram) se o token tiver mais de uma
+    versao_api: v26.0
+  tiktok:
+    porta: 8765          # redirect URI do app: http://localhost:8765/callback/
+
+caminhos:
+  # Dados pesados (banco, áudios, vídeos de trabalho) ficam FORA do OneDrive para não travar a sincronização.
+  dados: "~/MaquinaDeVideos-dados"
+  # Vídeos finais (estes sim sincronizam).
+  saida: "saida"
